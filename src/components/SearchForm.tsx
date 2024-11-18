@@ -3,6 +3,7 @@
 import React, {FormEvent} from 'react';
 import styles from '../styles/SearchForm.module.css';
 import { useState } from 'react';
+import { redirect } from 'next/navigation'
 
 interface SearchFormProps {
     placeholder?: string;
@@ -16,8 +17,11 @@ function SearchForm({ placeholder = "OOO", onSearch }: SearchFormProps) {
         e.preventDefault();
         const form = e.target as HTMLFormElement;
         const query = (form.elements.namedItem('searchInput') as HTMLInputElement).value;
-        if (onSearch) {
-            onSearch(query);
+        if (query != "") {
+            if (onSearch) {
+              onSearch(query);
+            }
+            redirect('/map')
         }
     };
 
