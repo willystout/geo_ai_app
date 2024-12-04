@@ -8,6 +8,17 @@ import SearchIcon from '@mui/icons-material/Search';
 import { CircleLoader } from 'react-spinners';
 import { generateSatelliteImage } from 'src/app/map/coordinates'
 
+// Add these new imports after the existing ones
+import { FormEvent } from 'react';  // Add FormEvent to your React imports
+import { createClient } from '@supabase/supabase-js';
+import { User } from '@supabase/supabase-js';
+
+// Add this Supabase initialization after your imports but before the MapPage component
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+
 type MapInstance = google.maps.Map
 type MarkerInstance = google.maps.Marker
 
@@ -35,11 +46,31 @@ export default function MapPage() {
     const [markers, setMarkers] = useState<MarkerInstance[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [locations, setLocations] = useState<Location[]>([])
+    // Add these new state variables alongside your existing ones
+    const [user, setUser] = useState<User | null>(null);
+    const [searchIsLoading, setSearchIsLoading] = useState(false);
+    const searchInputRef = useRef<HTMLInputElement>(null);
 
     const initialCenter: google.maps.LatLngLiteral = {
         lat: 37.7749,
         lng: -122.4506,
     }
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            setUser(session?.user ?? null);
+        };
+        checkUser();
+
+        const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => {
+            authListener.subscription.unsubscribe();
+        };
+    }, []);
 
     useEffect(() => {
         // Make the image generation function globally accessible
@@ -103,7 +134,7 @@ export default function MapPage() {
                                 </button>
                             </div>
                         `,
-                        maxWidth: 300
+                            maxWidth: 300
                         });
 
                         marker.addListener('click', () => {
@@ -158,31 +189,92 @@ export default function MapPage() {
             markers.forEach(marker => marker.setMap(null));
         }
     }, [])
-    // Rest of the component remains the same as in the original file
-    // (handleResetMap, handleToggleTerrain, and return statement)
-    // ...
 
-    const handleResetMap = () => {
-        if (mapInstance && markers.length > 0) {
-            const bounds = new google.maps.LatLngBounds();
-            markers.forEach(marker => {
-                bounds.extend(marker.getPosition()!);
-            });
-            mapInstance.fitBounds(bounds);
-            const padding = { top: 50, right: 50, bottom: 50, left: 50 };
-            mapInstance.panToBounds(bounds, padding);
-        }
-    }
+    const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const query = searchInputRef.current?.value;
 
-    const handleToggleTerrain = () => {
-        if (mapInstance) {
-            const currentMapTypeId = mapInstance.getMapTypeId()
-            const newMapTypeId = currentMapTypeId === google.maps.MapTypeId.TERRAIN
-                ? google.maps.MapTypeId.ROADMAP
-                : google.maps.MapTypeId.TERRAIN
-            mapInstance.setMapTypeId(newMapTypeId)
+        if (query) {
+            try {
+                setSearchIsLoading(true);
+                const response = await fetch('/api/locations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch locations');
+                }
+
+                const data = await response.json();
+                localStorage.setItem('mapLocations', JSON.stringify(data.locations));
+                setLocations(data.locations);
+
+                if (user) {
+                    await supabase.from('queries').insert({
+                        user_id: user.id,
+                        query_text: query,
+                        mode: "Query LLM",
+                        additional_metadata: {
+                            user_agent: navigator.userAgent
+                        }
+                    });
+                }
+
+                if (mapInstance) {
+                    const bounds = new google.maps.LatLngBounds();
+                    markers.forEach(marker => marker.setMap(null));
+
+                    const newMarkers: MarkerInstance[] = data.locations.map((location: Location) => {
+                        const marker = new google.maps.Marker({
+                            position: location.coordinates,
+                            map: mapInstance,
+                            title: location.title,
+                            animation: google.maps.Animation.DROP
+                        });
+
+                        const infoWindow = new google.maps.InfoWindow({
+                            content: `
+                                <div class="p-3">
+                                    <h3 class="font-bold text-lg">${location.title}</h3>
+                                    <p>${location.description}</p>
+                                    <p class="text-sm">Type: ${location.type}</p>
+                                    <button onclick="window.generateSatelliteImage(${location.coordinates.lat}, ${location.coordinates.lng})" 
+                                            class="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                        Generate Satellite Image
+                                    </button>
+                                </div>
+                            `,
+                            maxWidth: 300
+                        });
+
+                        marker.addListener('click', () => {
+                            infoWindow.open({
+                                map: mapInstance,
+                                anchor: marker
+                            });
+                        });
+
+                        bounds.extend(location.coordinates);
+                        return marker;
+                    });
+
+                    setMarkers(newMarkers);
+                    mapInstance.fitBounds(bounds);
+                    const padding = { top: 50, right: 50, bottom: 50, left: 50 };
+                    mapInstance.panToBounds(bounds, padding);
+                }
+
+            } catch (error) {
+                console.error('Error fetching locations:', error);
+            } finally {
+                setSearchIsLoading(false);
+            }
         }
-    }
+    };
 
     return (
         <main className="flex flex-col min-h-screen"> {/* Changed from h-screen to min-h-screen */}
@@ -192,39 +284,54 @@ export default function MapPage() {
             <div className="relative flex-1 mt-20"> {/* Changed pt-20 to mt-20 and moved it here */}
                 {/* Search box container */}
                 <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 w-full max-w-md px-4">
-                    <Paper
-                        elevation={3}
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            borderRadius: '24px',
-                            px: 2,
-                            py: 0.5,
-                            backgroundColor: 'white',
-                            '&:hover': {
-                                boxShadow: 4,
-                            },
-                            transition: 'box-shadow 0.3s ease-in-out',
-                        }}
-                    >
-                        <IconButton sx={{ p: '10px' }} aria-label="search">
-                            <SearchIcon />
-                        </IconButton>
-                        <InputBase
-                            fullWidth
-                            placeholder="Search locations..."
+                    <form onSubmit={handleSearch}>
+                        <Paper
+                            elevation={3}
                             sx={{
-                                ml: 1,
-                                flex: 1,
-                                '& input': {
-                                    padding: '8px 0',
-                                    fontSize: '0.95rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                borderRadius: '24px',
+                                px: 2,
+                                py: 0.5,
+                                backgroundColor: 'white',
+                                '&:hover': {
+                                    boxShadow: 4,
                                 },
+                                transition: 'box-shadow 0.3s ease-in-out',
                             }}
-                        />
-                    </Paper>
+                        >
+                            {/* Replace the IconButton with this conditional rendering */}
+                            {searchIsLoading ? (
+                                <div className="p-2">
+                                    <CircleLoader color="#800080" size={24} />
+                                </div>
+                            ) : (
+                                <IconButton
+                                    type="submit"
+                                    sx={{ p: '10px' }}
+                                    disabled={searchIsLoading}
+                                    aria-label="search"
+                                >
+                                    <SearchIcon />
+                                </IconButton>
+                            )}
+                            <InputBase
+                                inputRef={searchInputRef}
+                                fullWidth
+                                placeholder="Search locations..."
+                                disabled={searchIsLoading}
+                                sx={{
+                                    ml: 1,
+                                    flex: 1,
+                                    '& input': {
+                                        padding: '8px 0',
+                                        fontSize: '0.95rem',
+                                    },
+                                }}
+                            />
+                        </Paper>
+                    </form>
                 </div>
-
                 {/* Map container */}
                 <div
                     ref={mapRef}
