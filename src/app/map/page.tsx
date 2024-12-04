@@ -8,12 +8,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import { CircleLoader } from 'react-spinners';
 import { generateSatelliteImage } from 'src/app/map/coordinates'
 
-// Add these new imports after the existing ones
-import { FormEvent } from 'react';  // Add FormEvent to your React imports
+import { FormEvent } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { User } from '@supabase/supabase-js';
 
-// Add this Supabase initialization after your imports but before the MapPage component
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -46,7 +44,6 @@ export default function MapPage() {
     const [markers, setMarkers] = useState<MarkerInstance[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [locations, setLocations] = useState<Location[]>([])
-    // Add these new state variables alongside your existing ones
     const [user, setUser] = useState<User | null>(null);
     const [searchIsLoading, setSearchIsLoading] = useState(false);
     const searchInputRef = useRef<HTMLInputElement>(null);
@@ -153,7 +150,6 @@ export default function MapPage() {
                     // Fit map to show all markers
                     if (locations.length > 0) {
                         map.fitBounds(bounds);
-                        // Add some padding to the bounds
                         const padding = { top: 50, right: 50, bottom: 50, left: 50 };
                         map.panToBounds(bounds, padding);
                     }
@@ -277,11 +273,11 @@ export default function MapPage() {
     };
 
     return (
-        <main className="flex flex-col min-h-screen"> {/* Changed from h-screen to min-h-screen */}
+        <main className="flex flex-col min-h-screen">
             <Header />
 
             {/* Main content area with the map */}
-            <div className="relative flex-1 mt-20"> {/* Changed pt-20 to mt-20 and moved it here */}
+            <div className="relative flex-1 mt-20"> 
                 {/* Search box container */}
                 <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 w-full max-w-md px-4">
                     <form onSubmit={handleSearch}>
@@ -300,7 +296,6 @@ export default function MapPage() {
                                 transition: 'box-shadow 0.3s ease-in-out',
                             }}
                         >
-                            {/* Replace the IconButton with this conditional rendering */}
                             {searchIsLoading ? (
                                 <div className="p-2">
                                     <CircleLoader color="#800080" size={24} />
