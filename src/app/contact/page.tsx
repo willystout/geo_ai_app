@@ -1,6 +1,6 @@
 'use client';
 
-import AboutPage from '@/components/About';
+import Contact from '@/components/Contact';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 
@@ -8,7 +8,7 @@ export default function Page() {
     return (
         <>
             <Header />
-            <AboutPage />
+            <Contact />
             <Footer /> {/* Include Footer here */}
         </>
     );

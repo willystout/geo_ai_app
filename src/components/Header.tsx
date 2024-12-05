@@ -77,7 +77,7 @@ const Header = () => {
                             Home
                         </Link>
                         <Link
-                            href="/about"
+                            href="/aboutpage"
                             className="text-[#f1f5f9] hover:text-[#fbbf24] text-[13px] font-medium transition-colors"
                         >
                             About Us

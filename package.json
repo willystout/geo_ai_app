@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
     "@googlemaps/markerwithlabel": "^2.0.28",
