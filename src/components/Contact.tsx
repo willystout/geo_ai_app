@@ -24,7 +24,7 @@ function ContactPage() {
     const router = useRouter();
 
     // Initialize EmailJS with your User ID (replace with your actual User ID or API key)
-    init(process.env.EMAILJS_API_KEY || '');
+    init(process.env.NEXT_PUBLIC_EMAILJS_API_KEY || '');
 
     useEffect(() => {
         const checkUser = async () => {
