@@ -43,8 +43,8 @@ export const generateSatelliteImage = (lat: number, lng: number) => {
     backButton.textContent = 'Back to Map'
     backButton.style.cssText = `
         padding: 10px 20px;
-        background-color: #3B82F6;
-        color: white;
+        background-color: #3e4958;
+        color: #ffffff;
         border: none;
         border-radius: 5px;
         cursor: pointer;
@@ -58,8 +58,8 @@ export const generateSatelliteImage = (lat: number, lng: number) => {
     downloadButton.textContent = 'Download Image'
     downloadButton.style.cssText = `
         padding: 10px 20px;
-        background-color: #10B981;
-        color: white;
+        background-color: #3e4958;
+        color: #ffffff;
         border: none;
         border-radius: 5px;
         cursor: pointer;
