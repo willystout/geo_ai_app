@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+.authContainer {
+    font-family: Inter, serif;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    /* Changed from light to dark theme to match footer */
+    background-color: #20262e;
+    border-radius: 8px;
+    padding: 8px 12px;
+    /* Updated shadow to be more subtle on dark background */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.userAvatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    /* Changed border color to match footer link color */
+    border: 2px solid #a5b4fc;
+}
+
+.userEmail {
+    font-size: 13px; /* Matched to footer font size */
+    color: #f1f5f9; /* Changed to footer text color */
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.signInButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    /* Changed to match footer's color scheme */
+    background-color: rgba(100, 116, 139, 0.2); /* Using the same color as your header button */
+    color: #a5b4fc;
+    border: 1px solid #64748b;
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.signInButton:hover {
+    background-color: rgba(100, 116, 139, 0.3);
+    color: #fbbf24; /* Changed to match footer hover color */
+    transform: translateY(-2px);
+}
+
+.signOutButton {
+    margin-left: 8px;
+    /* Updated to match the theme */
+    background-color: rgba(100, 116, 139, 0.2);
+    color: #a5b4fc;
+    border: 1px solid #64748b;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.signOutButton:hover {
+    background-color: rgba(100, 116, 139, 0.3);
+    color: #fbbf24;
+}
+
+
+
+

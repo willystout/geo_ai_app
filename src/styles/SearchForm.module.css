@@ -1,11 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
-/* .search-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-} */
 
 
 .logo-text {
@@ -27,16 +22,18 @@
 
 .searchform {
   display: flex;
-  gap: 25px;
+  gap: 8px;
   justify-content: center;
   align-items: center;
   width: 100%;
   height: 10%;
   padding-bottom: 0px;
+  max-width: 800px; 
+  margin: 0; 
 }
 
 .search-input {
-  width: 50%;
+  width: 100%;
   padding: 15px;
   font-size: 18px;
   background-color: #ebebeb;
@@ -52,13 +49,12 @@
   font-family: Inter;
   font-weight: 400;
   color: #3a3a3a; /* A darker shade for better contrast */
-  opacity: 1; /* Ensures it's fully opaque */
+  opacity: 1;
 }
 
 .file-input {
-  position: bottom;
-  max-width: 150px;
-  right: 405px;
+  position: relative;
+  max-width: 112px;
   width: auto;
   padding: 0;
   background: transparent;
@@ -66,6 +62,7 @@
   cursor: pointer;
   color: #666666;
   font-size: 14px;
+  margin: 0;
 }
 
 .file-input::-webkit-file-upload-button {
@@ -73,9 +70,9 @@
 }
 
 .file-input::before {
-  content: 'Choose Image';
+  content: 'Upload Image';
   display: inline-block;
-  background-color: #4285f4;
+  background-color: #3e4958;
   color: white;
   padding: 6px 10px;
   border-radius: 5px;
@@ -84,7 +81,7 @@
 }
 
 .file-input:hover::before {
-  background-color: #357ae8;
+  background-color: #58687e;
 }
 
 .search-container {
@@ -93,25 +90,27 @@
   align-items: center;
   justify-content: flex-start;
   height: 100vh;
+  width: 100%;
   background-color: #fff; 
   padding: 20px;
-  background-color: #a6d8fe !important; /* Optional background color */
-  background-image: url('../../public/worldBG.png'); /* Background image */
-  background-size: cover; /* Cover the entire page */
+  background-color: #a6d8fe !important;
+  background-image: url('../../public/worldBG.png');
+  background-size: cover;
   background-position: unset;
 }
 
 .search-button {
   width: 60px;
   height: 60px;
-  background-color: transparent; /* Makes button background transparent */
+  background-color: transparent;
   border: none;
-  border-radius: 50%;
+  border-radius: 0%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-left: 0px;
 }
 
 .search-button svg {
@@ -124,9 +123,17 @@
   transform: rotate(270deg) translateY(3px); /* Moves the SVG slightly to the right */
 } 
 
+.google-button-container  {
+  background-color: aqua;
+  position: absolute; /* Allow positioning relative to the viewport */
+  top: 10px; /* Adjust the vertical spacing */
+  left: 10px; /* Adjust the horizontal spacing */
+  z-index: 1000; /* Ensure it stays on top of other elements */
+}
+
 .arrow-icon {
-  width: 110px;
-  height: 300px;
+  width: 24px;
+  height: 24px;
   transform: rotate(270deg);
 }
 
@@ -143,6 +150,7 @@
   font-size: 14px;
   border: none;
   background-color: #ffffff;
+  color: #4f4f4f;
   cursor: pointer;
   transition: background-color 0.2s ease, color 0.2s ease;
   border-radius: 0;
@@ -162,18 +170,98 @@
 
 /* Active mode button style */
 .active-mode {
-  background-color: #181818;
+  background-color: #3e4958;
   color: #ffffff;
 }
 
-.mode-button:hover {
-  background-color: #8e8e8e;
+.mode-button:not(.active-mode):hover {
+  background-color: #a4a3ad;
   color: #ffffff;
 }
 
-.mode-button:active {
-  background-color: #2b2b2b;
-  color: #ffffff;
+.query-history-container {
+  position: absolute;
+  top: 90px;  /* Positioned below the sign-in button */
+  left: 20px; /* Aligned with the sign-in button */
+  width: 250px;
+  max-height: 300px;
+  overflow-y: auto;
+  background-color: #2c2c2c;  /* Darker, more gray background */
+  border-radius: 8px;
+  padding: 15px;
+  font-family: Inter, sans-serif;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;  /* Ensure it's above other elements */
+}
+
+.query-history-container h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: #e0e0e0;  /* Light gray/white text for title */
+  font-weight: 600;
+}
+
+.query-history-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.query-history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-bottom: 1px solid #3c3c3c;  /* Darker separator */
+  font-size: 0.8rem;
+  color: #f0f0f0;  /* Very light text for readability on dark background */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-radius: 4px;
+}
+
+.query-history-item:last-child {
+  border-bottom: none;
+}
+
+.query-mode-badge {
+  font-size: 0.6rem;
+  background-color: #3c3c3c;  /* Dark background for badge */
+  color: #a0a0a0;  /* Slightly muted text */
+  padding: 2px 6px;
+  border-radius: 12px;
+  margin-left: 8px;
+  text-align: center;
 }
 
 
+
+.query-history-item:hover {
+  background-color: #353535;
+  opacity: 0.8;  
+}
+
+/* If no queries, style the message */
+.query-history-container p {
+  color: #a0a0a0;
+  font-size: 0.8rem;
+  text-align: center;
+  margin: 10px 0;
+}
+
+/* Optional: Custom scrollbar for dark theme */
+.query-history-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.query-history-container::-webkit-scrollbar-track {
+  background: #2c2c2c;
+}
+
+.query-history-container::-webkit-scrollbar-thumb {
+  background-color: #3c3c3c;
+  border-radius: 4px;
+}

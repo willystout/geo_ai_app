@@ -1,22 +1,51 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { Box, TextField, Paper, IconButton, InputBase } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import { CircleLoader } from 'react-spinners';
+import { generateSatelliteImage } from 'src/app/map/coordinates'
+
+import { FormEvent } from 'react';
+import { createClient } from '@supabase/supabase-js';
+import { User } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 type MapInstance = google.maps.Map
 type MarkerInstance = google.maps.Marker
+
+interface Location {
+    title: string;
+    coordinates: {
+        lat: number;
+        lng: number;
+    };
+    type: string;
+    description: string;
+}
 
 declare global {
     interface Window {
         initMap?: () => void
         google: typeof google
+        generateSatelliteImage?: (lat: number, lng: number) => void
     }
 }
 
 export default function MapPage() {
     const mapRef = useRef<HTMLDivElement | null>(null)
     const [mapInstance, setMapInstance] = useState<MapInstance | null>(null)
-    const [markerInstance, setMarkerInstance] = useState<MarkerInstance | null>(null)
+    const [markers, setMarkers] = useState<MarkerInstance[]>([])
     const [isLoading, setIsLoading] = useState(true)
+    const [locations, setLocations] = useState<Location[]>([])
+    const [user, setUser] = useState<User | null>(null);
+    const [searchIsLoading, setSearchIsLoading] = useState(false);
+    const searchInputRef = useRef<HTMLInputElement>(null);
 
     const initialCenter: google.maps.LatLngLiteral = {
         lat: 37.7749,
@@ -24,18 +53,45 @@ export default function MapPage() {
     }
 
     useEffect(() => {
+        const checkUser = async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            setUser(session?.user ?? null);
+        };
+        checkUser();
+
+        const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+            setUser(session?.user ?? null);
+        });
+
+        return () => {
+            authListener.subscription.unsubscribe();
+        };
+    }, []);
+
+    useEffect(() => {
+        // Make the image generation function globally accessible
+        window.generateSatelliteImage = generateSatelliteImage
+
+        // Load locations from localStorage
+        const savedLocations = localStorage.getItem('mapLocations');
+        if (savedLocations) {
+            setLocations(JSON.parse(savedLocations));
+        }
+
         const initMap = () => {
             if (!mapRef.current) return
 
             try {
+                // Check if map is already initialized
+                if (mapInstance) return;
+
                 const mapOptions: google.maps.MapOptions = {
                     center: initialCenter,
                     zoom: 12,
                     mapTypeControl: true,
-                    streetViewControl: true,
                     fullscreenControl: true,
                     zoomControl: true,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP,
+                    mapTypeId: google.maps.MapTypeId.SATELLITE,
                     styles: [
                         {
                             featureType: "all",
@@ -50,70 +106,61 @@ export default function MapPage() {
                 const map = new google.maps.Map(mapRef.current, mapOptions)
                 setMapInstance(map)
 
-                const markerOptions: google.maps.MarkerOptions = {
-                    position: initialCenter,
-                    map: map,
-                    title: "New York City",
-                    animation: google.maps.Animation.DROP,
-                    draggable: true
+                // Create markers for all locations
+                const locations: Location[] = JSON.parse(localStorage.getItem('mapLocations') || '[]');
+                const bounds = new google.maps.LatLngBounds();
+                const newMarkers: MarkerInstance[] = [];
+                const markersWithInfoWindows: { marker: MarkerInstance, infoWindow: google.maps.InfoWindow }[] = [];
+
+
+                locations.forEach((location) => {
+                    const marker = new google.maps.Marker({
+                        position: location.coordinates,
+                        map: map,
+                        title: location.title,
+                        animation: google.maps.Animation.DROP
+                    });
+
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `
+                        <div class="p-3" style="color: #333333;">
+                            <h3 class="font-bold text-lg" style="color: #000000;">${location.title}</h3>
+                            <p class="text-gray-800" style="color: #333333;">${location.description}</p>
+                            <p class="text-sm" style="color: #666666;">Type: ${location.type}</p>
+                            <button onclick="window.generateSatelliteImage(${location.coordinates.lat}, ${location.coordinates.lng})" 
+                                    class="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                Generate Satellite Image
+                            </button>
+                        </div>
+                    `,
+                        maxWidth: 300
+                    });
+
+                    marker.addListener('click', () => {
+                        
+                        markersWithInfoWindows.forEach(({ infoWindow: existingInfoWindow }) => {
+                            existingInfoWindow.close();
+                        });
+                        infoWindow.open({
+                            map,
+                            anchor: marker
+                        });
+                    });
+                    markersWithInfoWindows.push({ marker, infoWindow });
+                    bounds.extend(location.coordinates);
+                    newMarkers.push(marker);
+                });
+
+                setMarkers(newMarkers);
+
+                // Fit map to show all markers
+                if (locations.length > 0) {
+                    map.fitBounds(bounds);
+                    const padding = { top: 50, right: 50, bottom: 50, left: 50 };
+                    map.panToBounds(bounds, padding);
                 }
 
-                const marker = new google.maps.Marker(markerOptions)
-                setMarkerInstance(marker)
-
-                const infoWindowOptions: google.maps.InfoWindowOptions = {
-                    content: `
-            <div class="p-2">
-              <h3 class="font-bold">New York City</h3>
-              <p>The City That Never Sleeps</p>
-              <p class="text-sm text-gray-500">Click and drag marker to move</p>
-            </div>
-          `,
-                    maxWidth: 200
-                }
-
-                const infoWindow = new google.maps.InfoWindow(infoWindowOptions)
-
-                marker.addListener('click', () => {
-                    infoWindow.open({
-                        map,
-                        anchor: marker
-                    })
-                })
-
-                marker.addListener('dragend', () => {
-                    const position = marker.getPosition()
-                    if (position) {
-                        const newPos = {
-                            lat: position.lat(),
-                            lng: position.lng()
-                        }
-                        map.panTo(newPos)
-                        console.log('New position:', newPos)
-                    }
-                })
-
-                map.addListener('click', (e: google.maps.MapMouseEvent) => {
-                    if (e.latLng) {
-                        const clickedPos = {
-                            lat: e.latLng.lat(),
-                            lng: e.latLng.lng()
-                        }
-
-                        new google.maps.Marker({
-                            position: clickedPos,
-                            map: map,
-                            animation: google.maps.Animation.DROP,
-                            title: `Marker at ${clickedPos.lat}, ${clickedPos.lng}`
-                        })
-                    }
-                })
-
-                const loadingElement = document.getElementById('map-loading')
-                if (loadingElement) {
-                    loadingElement.style.display = 'none'
-                }
-                setIsLoading(false)
+                setIsLoading(false);
 
             } catch (error) {
                 console.error('Error initializing map:', error)
@@ -121,86 +168,206 @@ export default function MapPage() {
             }
         }
 
-        window.initMap = initMap
+        // Global function to initialize map
+        window.initMap = initMap;
 
-        const script = document.createElement('script')
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&callback=initMap`
-        script.async = true
-        script.defer = true
-        script.onerror = () => {
-            console.error('Failed to load Google Maps script')
-            setIsLoading(false)
-        }
-        document.head.appendChild(script)
-
-        return () => {
-            if (script.parentNode) {
-                script.parentNode.removeChild(script)
+        // Check if Google Maps is already loaded
+        if (window.google && window.google.maps) {
+            initMap();
+        } else {
+            // Load Google Maps script only if not already loaded
+            const existingScript = document.querySelector('script[src^="https://maps.googleapis.com/maps/api/js"]');
+            
+            if (!existingScript) {
+                const script = document.createElement('script');
+                script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&callback=initMap`;
+                script.async = true;
+                script.defer = true;
+                
+                script.onerror = () => {
+                    console.error('Failed to load Google Maps script');
+                    setIsLoading(false);
+                };
+                
+                document.head.appendChild(script);
             }
-            window.initMap = undefined
         }
-    }, [])
 
-    const handleResetMap = () => {
-        if (mapInstance && markerInstance) {
-            mapInstance.setCenter(initialCenter)
-            mapInstance.setZoom(12)
-            markerInstance.setPosition(initialCenter)
+        // Cleanup function
+        return () => {
+            // Clear markers
+            markers.forEach(marker => marker.setMap(null));
+            
+            // Remove global functions
+            window.initMap = undefined;
+            window.generateSatelliteImage = undefined;
         }
-    }
+    }, [mapInstance]) // Add mapInstance to dependency array to prevent multiple initializations
 
-    const handleToggleTerrain = () => {
-        if (mapInstance) {
-            const currentMapTypeId = mapInstance.getMapTypeId()
-            const newMapTypeId = currentMapTypeId === google.maps.MapTypeId.TERRAIN
-                ? google.maps.MapTypeId.ROADMAP
-                : google.maps.MapTypeId.TERRAIN
-            mapInstance.setMapTypeId(newMapTypeId)
+    const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        const query = searchInputRef.current?.value;
+
+        if (query) {
+            try {
+                setSearchIsLoading(true);
+                const response = await fetch('/api/locations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch locations');
+                }
+
+                const data = await response.json();
+                localStorage.setItem('mapLocations', JSON.stringify(data.locations));
+                setLocations(data.locations);
+
+                if (user) {
+                    await supabase.from('queries').insert({
+                        user_id: user.id,
+                        query_text: query,
+                        mode: "Query LLM",
+                        additional_metadata: {
+                            user_agent: navigator.userAgent
+                        }
+                    });
+                }
+
+                if (mapInstance) {
+                    const bounds = new google.maps.LatLngBounds();
+                    markers.forEach(marker => marker.setMap(null));
+
+                    const newMarkers: MarkerInstance[] = data.locations.map((location: Location) => {
+                        const marker = new google.maps.Marker({
+                            position: location.coordinates,
+                            map: mapInstance,
+                            title: location.title,
+                            animation: google.maps.Animation.DROP
+                        });
+
+                        const infoWindow = new google.maps.InfoWindow({
+                            content: `
+                                <div class="p-3">
+                                    <h3 class="font-bold text-lg">${location.title}</h3>
+                                    <p>${location.description}</p>
+                                    <p class="text-sm">Type: ${location.type}</p>
+                                    <button onclick="window.generateSatelliteImage(${location.coordinates.lat}, ${location.coordinates.lng})" 
+                                            class="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                        Generate Satellite Image
+                                    </button>
+                                </div>
+                            `,
+                            maxWidth: 300
+                        });
+
+                        marker.addListener('click', () => {
+                            infoWindow.open({
+                                map: mapInstance,
+                                anchor: marker
+                            });
+                        });
+
+                        bounds.extend(location.coordinates);
+                        return marker;
+                    });
+
+                    setMarkers(newMarkers);
+                    mapInstance.fitBounds(bounds);
+                    const padding = { top: 50, right: 50, bottom: 50, left: 50 };
+                    mapInstance.panToBounds(bounds, padding);
+                }
+
+            } catch (error) {
+                console.error('Error fetching locations:', error);
+            } finally {
+                setSearchIsLoading(false);
+            }
         }
-    }
+    };
 
     return (
-        <main className="w-full">
-            <div className="mb-4">
-                <div className="flex justify-center gap-2">
-                    <h1 className="text-2xl font-bold" >GEO AI MAP CLIENT</h1>
-                </div>
-            </div>
-            <div className="rounded-lg overflow-hidden shadow-lg border border-gray-200">
-                <div className="relative">
-                    <div
-                        ref={mapRef}
-                        className="h-[600px] w-full"
-                    />
-                    {isLoading && (
-                        <div
-                            className="absolute inset-0 bg-gray-100 animate-pulse"
-                            id="map-loading"
+        <main className="flex flex-col min-h-screen">
+            <Header />
+
+            {/* Main content area with the map */}
+            <div className="relative flex-1 mt-20"> 
+                {/* Search box container */}
+                <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 w-full max-w-md px-4">
+                    <form onSubmit={handleSearch}>
+                        <Paper
+                            elevation={3}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                borderRadius: '24px',
+                                px: 2,
+                                py: 0.5,
+                                backgroundColor: 'white',
+                                '&:hover': {
+                                    boxShadow: 4,
+                                },
+                                transition: 'box-shadow 0.3s ease-in-out',
+                            }}
                         >
-                            <div className="h-full w-full flex items-center justify-center">
-                                <p className="text-gray-500">Loading map...</p>
-                            </div>
-                        </div>
-                    )}
+                            {searchIsLoading ? (
+                                <div className="p-2">
+                                    <CircleLoader color="#800080" size={24} />
+                                </div>
+                            ) : (
+                                <IconButton
+                                    type="submit"
+                                    sx={{ p: '10px' }}
+                                    disabled={searchIsLoading}
+                                    aria-label="search"
+                                >
+                                    <SearchIcon />
+                                </IconButton>
+                            )}
+                            <InputBase
+                                inputRef={searchInputRef}
+                                fullWidth
+                                placeholder="Search locations..."
+                                disabled={searchIsLoading}
+                                sx={{
+                                    ml: 1,
+                                    flex: 1,
+                                    '& input': {
+                                        padding: '8px 0',
+                                        fontSize: '0.95rem',
+                                    },
+                                }}
+                            />
+                        </Paper>
+                    </form>
                 </div>
+                {/* Map container */}
+                <div
+                    ref={mapRef}
+                    className="w-full h-[calc(100vh-152px)]"
+                    style={{ backgroundColor: 'gray-100' }}
+                />
+
+                {isLoading && (
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            inset: 0,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <CircleLoader color="#800080" size={50} />
+                    </Box>
+                )}
             </div>
 
-            <div className="mt-4 p-4 bg-white rounded-lg shadow border border-gray-200">
-                <div className="flex justify-center">
-                    <button
-                        onClick={handleResetMap}
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                    >
-                        Reset View
-                    </button>
-                    <button
-                        onClick={handleToggleTerrain}
-                        className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-                    >
-                        Toggle Terrain
-                    </button>
-                </div>
-            </div>
+            <Footer />
         </main>
     )
 }

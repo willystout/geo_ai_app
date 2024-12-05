@@ -21,7 +21,6 @@ Before you begin, ensure you have installed:
 - Node.js 18.0 or later
 - npm or yarn or pnpm
 - Python 3.9 or later
-- Docker (for local development and deployment)
 
 ## 💻 Installation
 
@@ -42,7 +41,12 @@ Before you begin, ensure you have installed:
 
    ```bash
    cp .env.example .env.local
-   # Add your environment variables
+   # Add your environment variables: 
+   OpenAI API Key: OPENAI_API_KEY
+   Google Maps API Key: GOOGLE_MAPS_API_KEY
+   supaBase URL: NEXT_PUBLIC_SUPABASE_URL
+   supaBase Anon Key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+
    ```
 
 ## 🎮 Development
@@ -57,12 +61,9 @@ Before you begin, ensure you have installed:
 
 ## 🏗️ Project Structure
 
-```
+```bash
 ├── app/        # Next.js 13 App Router pages and layouts
 ├── components/ # Reusable UI components
-├── lib/        # Utility functions and libraries
-├── models/     # Machine learning models and data processing
-├── pages/      # Legacy Next.js 12 pages (deprecated)
 ├── public/     # Static assets
 └── styles/     # Global styles and CSS modules
 ```
@@ -89,13 +90,15 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## 📚 Tech Stack
 
-- [Next.js 13](https://nextjs.org/) - React Framework
-- [TypeScript](https://www.typescriptlang.org/) - Statically typed JavaScript
-- [Geist UI](https://geist-ui.dev/) - UI library for modern web apps
-- [Mapbox](https://www.mapbox.com/) - Interactive mapping platform
-- [Langchain](https://langchain.com/) - Framework for building applications with large language models
-- [Ollama](https://www.anthropic.com/ollama) - Anthropic's large language model
-- [Google Earth Engine](https://earthengine.google.com/) - Cloud-based geospatial analysis platform
+- [React](https://reactjs.org/) & [Next.js](https://nextjs.org/) - Modern frontend frameworks for building user interfaces
+- [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML) / [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) / [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript) - Core web technologies for frontend development
+- [Clay](https://huggingface.co/made-with-clay) / [Prithvi](https://huggingface.co/ibm-nasa-geospatial/Prithvi-100M) / [Google Earth Engine](https://earthengine.google.com/) - Foundation models and tools for geospatial analysis
+- [OpenAI](https://openai.com/) - Large Language Model (LLM) for natural language processing
+- [Python](https://www.python.org/) - Versatile programming language for backend development
+- [NumPy](https://numpy.org/) / [Pandas](https://pandas.pydata.org/) - Python libraries for data manipulation and analysis
+- [Slack](https://slack.com/) / [Lucidchart](https://www.lucidchart.com/) - Collaboration and communication tools
+- [GitHub](https://github.com/) - Version control and code repository
+- [Google Drive](https://www.google.com/drive/) / [Figma](https://www.figma.com/) - File storage and design collaboration tools
 
 ## 🚀 Deployment
 

@@ -9,10 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.5",
+    "@emotion/styled": "^11.13.5",
     "@googlemaps/markerwithlabel": "^2.0.28",
-    "next": "15.0.3",
+    "@mui/icons-material": "^6.1.9",
+    "@mui/material": "^6.1.9",
+    "@supabase/supabase-js": "^2.46.2",
+    "next": "^15.0.3",
+    "openai-edge": "^1.2.2",
     "react": "19.0.0-rc-66855b96-20241106",
-    "react-dom": "19.0.0-rc-66855b96-20241106"
+    "react-dom": "19.0.0-rc-66855b96-20241106",
+    "react-spinners": "^0.14.1"
   },
   "devDependencies": {
     "@types/google.maps": "^3.58.1",
