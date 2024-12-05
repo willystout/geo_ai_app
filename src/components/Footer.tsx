@@ -2,11 +2,20 @@
 
 import React from 'react';
 import styles from '../styles/Footer.module.css';
+import Image from 'next/image';
 
 function Footer() {
     return (
         <footer className={styles['footer-container']}>
             <div className={styles['footer-content']}>
+                <Image
+                    src="/usflogo.png"
+                    alt="USF Logo"
+                    width={100}
+                    height={100}
+                    className="w-auto h-10"
+                    priority
+                />
                 <p>&copy; 2024 GeoAI. All rights reserved.</p>
                 <nav>
                     <ul className={styles['footer-links']}>
