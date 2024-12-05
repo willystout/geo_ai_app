@@ -5,6 +5,8 @@ import styles from '../styles/SearchForm.module.css';
 import { redirect } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import { User } from '@supabase/supabase-js';
+import Link from 'next/link';
+
 
 import authStyles from '../styles/AuthButton.module.css';
 
@@ -272,6 +274,20 @@ function SearchForm({ placeholder = "", onSearch }: SearchFormProps) {
                         aria-label="Insert Image"
                     />
                 )}
+
+                <Link
+                    href="https://14bf-138-202-169-253.ngrok-free.app/upload/"
+                    passHref
+                >
+                    <button
+                        type="button"
+                        className={`${styles['mode-button']} ${activeMode === 'insert' ? styles['active-mode'] : ''}`}
+                     //   onClick={() => window.open("https://14bf-138-202-169-253.ngrok-free.app/upload/", "noopener,noreferrer")}
+                    >
+                        Insert Image
+                    </button>
+                </Link>
+
 
                 <button
                     type="submit"
