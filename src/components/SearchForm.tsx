@@ -308,6 +308,7 @@ function SearchForm({ placeholder = "", onSearch }: SearchFormProps) {
                 </button>
             </form>
 
+            {/*<removed toggle */}
             {/*<div className={styles['mode-selectors']}>*/}
             {/*    <button*/}
             {/*        type="button"*/}
