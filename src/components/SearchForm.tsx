@@ -308,22 +308,22 @@ function SearchForm({ placeholder = "", onSearch }: SearchFormProps) {
                 </button>
             </form>
 
-            <div className={styles['mode-selectors']}>
-                <button
-                    type="button"
-                    className={`${styles['mode-button']} ${activeMode === 'insert' ? styles['active-mode'] : ''}`}
-                    onClick={() => toggleMode('insert')}
-                >
-                    Insert Image
-                </button>
-                <button
-                    type="button"
-                    className={`${styles['mode-button']} ${activeMode === 'query' ? styles['active-mode'] : ''}`}
-                    onClick={() => toggleMode('query')}
-                >
-                    Query LLM
-                </button>
-            </div>
+            {/*<div className={styles['mode-selectors']}>*/}
+            {/*    <button*/}
+            {/*        type="button"*/}
+            {/*        className={`${styles['mode-button']} ${activeMode === 'insert' ? styles['active-mode'] : ''}`}*/}
+            {/*        onClick={() => toggleMode('insert')}*/}
+            {/*    >*/}
+            {/*        Insert Image*/}
+            {/*    </button>*/}
+            {/*    <button*/}
+            {/*        type="button"*/}
+            {/*        className={`${styles['mode-button']} ${activeMode === 'query' ? styles['active-mode'] : ''}`}*/}
+            {/*        onClick={() => toggleMode('query')}*/}
+            {/*    >*/}
+            {/*        Query LLM*/}
+            {/*    </button>*/}
+            {/*</div>*/}
 
             {/* Query History Section */}
             {user && (
