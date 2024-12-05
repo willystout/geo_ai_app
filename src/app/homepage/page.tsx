@@ -6,6 +6,7 @@ import SearchForm from '@/components/SearchForm'
 import Footer from '@/components/Footer';
 import fetchQueries from '@/supabase/supabaseClient';
 import FileUploadForm from '@/components/FileUploadForm';
+import SearchFormNew from '@/components/SearchFormNew';
 
 export default function HomePage() {
     // useEffect(() => {
@@ -30,7 +31,8 @@ export default function HomePage() {
             <Header />
             <div className="w-full min-h-screen">
                 <SearchForm onSearch={handleSearch} placeholder="Please enter your query..." />
-                <FileUploadForm/>
+
+                <SearchFormNew/>
 
             </div>
         </>

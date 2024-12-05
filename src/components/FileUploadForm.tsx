@@ -5,7 +5,7 @@ const FileUploadForm: React.FC = () => {
     const [detector, setDetector] = useState<string>('');
 
     const handleSubmit = async (event: React.FormEvent) => {
-        console.log('Form submitted')
+        console.log('Form submitted');
         event.preventDefault();
 
         const fileInput = fileInputRef.current;
@@ -18,11 +18,16 @@ const FileUploadForm: React.FC = () => {
 
         const reader = new FileReader();
         reader.onloadend = async function () {
+            console.log('FileReader onloadend triggered');
             const base64File = reader.result?.toString().split(',')[1]; // Extract Base64 part
+
             if (!base64File) {
+                console.error('Failed to extract base64 string from file');
                 alert('Failed to read the file.');
                 return;
             }
+
+            console.log('Base64 string extracted successfully:', base64File.slice(0, 100) + '...'); // Log first 100 characters
 
             const formData = new URLSearchParams();
             formData.append('file', base64File);
@@ -32,6 +37,7 @@ const FileUploadForm: React.FC = () => {
                 console.log('Sending POST request to API...');
                 const response = await fetch('https://14bf-138-202-169-253.ngrok-free.app/process-base64/', {
                     method: 'POST',
+                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
                     },
@@ -40,6 +46,7 @@ const FileUploadForm: React.FC = () => {
 
                 console.log('Response received:', response.status);
                 if (response.ok) {
+                    console.log('Processing response blob...');
                     const blob = await response.blob();
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
@@ -49,6 +56,7 @@ const FileUploadForm: React.FC = () => {
                     document.body.appendChild(a);
                     a.click();
                     window.URL.revokeObjectURL(url);
+                    console.log('File downloaded successfully');
                 } else {
                     const errorResponse = await response.json();
                     console.error('Error response:', errorResponse);
@@ -60,12 +68,13 @@ const FileUploadForm: React.FC = () => {
             }
         };
 
+        console.log('Starting to read file as Base64...');
         reader.readAsDataURL(file); // Convert file to Base64
     };
 
     return (
         <div>
-            <h1 className = "text-center logo-text">Upload Image and Enter Detector Name</h1>
+            <h1 className="text-center logo-text">Upload Image and Enter Detector Name</h1>
             <form onSubmit={handleSubmit}>
                 <label htmlFor="file">Insert image:</label>
                 <input
@@ -96,4 +105,3 @@ const FileUploadForm: React.FC = () => {
 };
 
 export default FileUploadForm;
-
