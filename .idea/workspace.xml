@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c79f65f2-f0df-45ea-bc4a-a367ee6244b3" name="Changes" comment="feat: add new FileUploadForm file as callable component for image detection functionality - adjusted homeppage page to call this component">
-      <change beforePath="$PROJECT_DIR$/src/app/homepage/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/homepage/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/FileUploadForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/FileUploadForm.tsx" afterDir="false" />
-    </list>
+    <list default="true" id="c79f65f2-f0df-45ea-bc4a-a367ee6244b3" name="Changes" comment="feat: add new FileUploadForm file as callable component for image detection functionality - adjusted homeppage page to call this component" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -116,7 +113,7 @@
       <workItem from="1733160921621" duration="2669000" />
       <workItem from="1733169693588" duration="1670000" />
       <workItem from="1733172449075" duration="27561000" />
-      <workItem from="1733386014650" duration="2513000" />
+      <workItem from="1733386014650" duration="2768000" />
     </task>
     <task id="LOCAL-00001" summary="feat: add new FileUploadForm file as callable component for image detection functionality - adjusted homeppage page to call this component">
       <option name="closed" value="true" />
