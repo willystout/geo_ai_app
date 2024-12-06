@@ -1,6 +1,6 @@
 'use client';
 
-import AboutPage from '@/components/About';
+import FAQPage from '@/components/FAQ';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 
@@ -8,8 +8,8 @@ export default function Page() {
     return (
         <>
             <Header />
-            <AboutPage />
-            <Footer />
+            <FAQPage />
+            <Footer /> {/* Include Footer here */}
         </>
     );
 }

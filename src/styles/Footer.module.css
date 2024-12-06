@@ -4,8 +4,7 @@
     font-family: Inter, serif;
     background-color: #20262e;
     color: #f1f5f9;
-    padding: 15px 10px;
-    text-align: center;
+    padding: 15px 20px;
     font-size: 13px;
     line-height: 1.6;
     border-top: 1px solid #64748b;
@@ -14,6 +13,41 @@
     left: 0;
     width: 100%;
     z-index: 9999;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr; 
+    align-items: center;
+    height: 40px;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-start;
+}
+
+.logo-image {
+    width: auto;
+    height: 40px;
+    object-fit: contain;
+}
+
+.footer-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.copyright {
+    margin: 0;
+    padding: 0;
 }
 
 .footer-links {
@@ -34,4 +68,22 @@
 
 .footer-links a:hover {
     color: #fbbf24;
+}
+
+/* For mobile or when screen becomes small */
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        height: auto;
+        padding: 10px 0;
+    }
+    
+    .footer-logo {
+        justify-content: center;
+    }
+    
+    .footer-right {
+        display: none;
+    }
 }
