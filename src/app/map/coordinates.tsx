@@ -78,7 +78,7 @@ export const generateSatelliteImage = (lat: number, lng: number) => {
                 link.href = blobUrl
                 link.download = `satellite_image_${lat}_${lng}.png`
                 
-                // Append to body, click, and remove
+                // Append to body, click, and remaove
                 document.body.appendChild(link)
                 link.click()
                 

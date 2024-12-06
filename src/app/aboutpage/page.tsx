@@ -9,7 +9,7 @@ export default function Page() {
         <>
             <Header />
             <AboutPage />
-            <Footer /> {/* Include Footer here */}
+            <Footer />
         </>
     );
 }

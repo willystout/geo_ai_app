@@ -40,6 +40,6 @@
     "**/*.test.tsx",
     "**/*.spec.ts",
     "**/*.spec.tsx"
-  ],
+, "jest.config.mjs"  ],
   "exclude": ["node_modules"]
 }

@@ -1,3 +1,4 @@
+/// <reference types="@types/google.maps" />
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
@@ -137,12 +138,12 @@ export default function MapPage() {
                     });
 
                     marker.addListener('click', () => {
-                        
+
                         markersWithInfoWindows.forEach(({ infoWindow: existingInfoWindow }) => {
                             existingInfoWindow.close();
                         });
                         infoWindow.open({
-                            map,
+                            map: mapInstance,
                             anchor: marker
                         });
                     });
@@ -177,18 +178,18 @@ export default function MapPage() {
         } else {
             // Load Google Maps script only if not already loaded
             const existingScript = document.querySelector('script[src^="https://maps.googleapis.com/maps/api/js"]');
-            
+
             if (!existingScript) {
                 const script = document.createElement('script');
                 script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&callback=initMap`;
                 script.async = true;
                 script.defer = true;
-                
+
                 script.onerror = () => {
                     console.error('Failed to load Google Maps script');
                     setIsLoading(false);
                 };
-                
+
                 document.head.appendChild(script);
             }
         }
@@ -197,7 +198,7 @@ export default function MapPage() {
         return () => {
             // Clear markers
             markers.forEach(marker => marker.setMap(null));
-            
+
             // Remove global functions
             window.initMap = undefined;
             window.generateSatelliteImage = undefined;
@@ -205,6 +206,7 @@ export default function MapPage() {
     }, [mapInstance]) // Add mapInstance to dependency array to prevent multiple initializations
 
     const handleSearch = async (e: FormEvent<HTMLFormElement>) => {
+        
         e.preventDefault();
         const query = searchInputRef.current?.value;
 
@@ -239,6 +241,7 @@ export default function MapPage() {
                 }
 
                 if (mapInstance) {
+                    const markersWithInfoWindows: { marker: MarkerInstance, infoWindow: google.maps.InfoWindow }[] = [];
                     const bounds = new google.maps.LatLngBounds();
                     markers.forEach(marker => marker.setMap(null));
 
@@ -252,26 +255,31 @@ export default function MapPage() {
 
                         const infoWindow = new google.maps.InfoWindow({
                             content: `
-                                <div class="p-3">
-                                    <h3 class="font-bold text-lg">${location.title}</h3>
-                                    <p>${location.description}</p>
-                                    <p class="text-sm">Type: ${location.type}</p>
-                                    <button onclick="window.generateSatelliteImage(${location.coordinates.lat}, ${location.coordinates.lng})" 
-                                            class="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-                                        Generate Satellite Image
-                                    </button>
-                                </div>
-                            `,
+                            <div class="p-3" style="color: #333333;">
+                                <h3 class="font-bold text-lg" style="color: #000000;">${location.title}</h3>
+                                <p class="text-gray-800" style="color: #333333;">${location.description}</p>
+                                <p class="text-sm" style="color: #666666;">Type: ${location.type}</p>
+                                <button onclick="window.generateSatelliteImage(${location.coordinates.lat}, ${location.coordinates.lng})" 
+                                        class="mt-2 px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+                                    Generate Satellite Image
+                                </button>
+                            </div>
+                        `,
                             maxWidth: 300
                         });
 
                         marker.addListener('click', () => {
+
+                            markersWithInfoWindows.forEach(({ infoWindow: existingInfoWindow }) => {
+                                existingInfoWindow.close();
+                            });
                             infoWindow.open({
                                 map: mapInstance,
                                 anchor: marker
                             });
                         });
-
+                        
+                        markersWithInfoWindows.push({ marker, infoWindow });
                         bounds.extend(location.coordinates);
                         return marker;
                     });
@@ -295,7 +303,7 @@ export default function MapPage() {
             <Header />
 
             {/* Main content area with the map */}
-            <div className="relative flex-1 mt-20"> 
+            <div className="relative flex-1 mt-20">
                 {/* Search box container */}
                 <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-10 w-full max-w-md px-4">
                     <form onSubmit={handleSearch}>
@@ -354,6 +362,7 @@ export default function MapPage() {
 
                 {isLoading && (
                     <Box
+                        role='progressbar'
                         sx={{
                             position: 'absolute',
                             inset: 0,
@@ -362,7 +371,7 @@ export default function MapPage() {
                             justifyContent: 'center',
                         }}
                     >
-                        <CircleLoader color="#800080" size={50} />
+                        <CircleLoader color="#000000" size={50} />
                     </Box>
                 )}
             </div>
