@@ -11,8 +11,6 @@ A modern web application that combines geographical data with cutting-edge artif
 - **Geospatial AI Analysis**: Integrates AI models trained on satellite and GIS data to enable advanced spatial analytics.
 - **Intuitive Mapping Interface**: Allows users to explore and interact with geographical data through an easy-to-use mapping interface.
 - **Natural Language Queries**: Supports natural language-based queries, enabling non-experts to perform complex geospatial analyses.
-- **Drag-and-Drop Visualization**: Provides a user-friendly drag-and-drop interface for creating custom data visualizations.
-- **Cloud-powered Scalability**: Designed to leverage cloud platforms like AWS for scalable and reliable performance.
 
 ## 🔧 Prerequisites
 
@@ -34,7 +32,7 @@ Before you begin, ensure you have installed:
 2. Install dependencies:
 
    ```bash
-   npm install # or yarn install or pnpm install
+   npm install --legacy-peer-deps # or yarn install or pnpm install
    ```
 
 3. Set up environment variables:
@@ -46,6 +44,10 @@ Before you begin, ensure you have installed:
    Google Maps API Key: GOOGLE_MAPS_API_KEY
    supaBase URL: NEXT_PUBLIC_SUPABASE_URL
    supaBase Anon Key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+   Emailjs Service ID: NEXT_PUBLIC_EMAILJS_SERVICE_ID
+   Emailjs Template ID: NEXT_PUBLIC_EMAILJS_TEMPLATE_ID
+   Emailjs APi Key: NEXT_PUBLIC_EMAILJS_API_KEY
+
 
    ```
 
@@ -85,15 +87,20 @@ We follow a feature branch workflow:
 1. Branch off of `dev`: `git checkout dev && git pull origin dev && git checkout -b feature/your-feature-name`
 2. Make your changes and commit: `git add . && git commit -m "feat: add new feature"`
 3. Push and create a PR to `dev`: `git push origin feature/your-feature-name`
+4. Remeber good practice! Never push straight to main
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## 📚 Tech Stack
 
 - [React](https://reactjs.org/) & [Next.js](https://nextjs.org/) - Modern frontend frameworks for building user interfaces
-- [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML) / [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) / [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript) - Core web technologies for frontend development
-- [Clay](https://huggingface.co/made-with-clay) / [Prithvi](https://huggingface.co/ibm-nasa-geospatial/Prithvi-100M) / [Google Earth Engine](https://earthengine.google.com/) - Foundation models and tools for geospatial analysis
+- [HTML](https://developer.mozilla.org/) / [CSS](https://developer.mozilla.org/en-US/docs/Web/CSS) / [Tailwind](https://tailwindcss.com/) / [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript) / [TypeScript](https://www.typescriptlang.org/) - Core web technologies for frontend development
+- [Clay](https://huggingface.co/made-with-clay) / [Prithvi](https://huggingface.co/ibm-nasa-geospatial/Prithvi-100M) / [Google Maps API](https://mapsplatform.google.com/) - Foundation models and tools for geospatial analysis
+- [Supabase](https://supabase.com/) - Database management component
+- [Google OAuth 2.0](https://developers.google.com/identity/protocols/oauth2) - User Login for database storage
+- [EmailJS] - Email service for contacting developers/project leads
 - [OpenAI](https://openai.com/) - Large Language Model (LLM) for natural language processing
+- [Jest](https://jestjs.io/) - Framework for unit testing
 - [Python](https://www.python.org/) - Versatile programming language for backend development
 - [NumPy](https://numpy.org/) / [Pandas](https://pandas.pydata.org/) - Python libraries for data manipulation and analysis
 - [Slack](https://slack.com/) / [Lucidchart](https://www.lucidchart.com/) - Collaboration and communication tools
@@ -102,12 +109,15 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## 🚀 Deployment
 
-This project is optimized for deployment on [Vercel](https://vercel.com):
+This project is optimized for deployment on USF cadejo.
+(Remember to redeploy everytime changes are staged to main!)
 
-1. Push your changes to GitHub.
-2. Import your project to Vercel.
-3. Configure environment variables.
-4. Deploy!
+To deploy:
+1. ssh to Stargate, then ssh to cadejo
+2. cd into raid directory
+3. cd into geo_ai_app
+4. run 'npm build'
+5. run 'npm start'
 
 For other deployment options, see the [Next.js deployment documentation](https://nextjs.org/docs/deployment).
 
@@ -120,7 +130,7 @@ For other deployment options, see the [Next.js deployment documentation](https:/
 
 ## 📫 Support
 
-For support, email [your-email] or open an issue on GitHub.
+For support, email geoai.contact@gmail.com or open an issue on GitHub.
 
 ## 📜 License
 
