@@ -98,7 +98,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 - [Clay](https://huggingface.co/made-with-clay) / [Prithvi](https://huggingface.co/ibm-nasa-geospatial/Prithvi-100M) / [Google Maps API](https://mapsplatform.google.com/) - Foundation models and tools for geospatial analysis
 - [Supabase](https://supabase.com/) - Database management component
 - [Google OAuth 2.0](https://developers.google.com/identity/protocols/oauth2) - User Login for database storage
-- [EmailJS] - Email service for contacting developers/project leads
+- [EmailJS](https://www.emailjs.com/) - Email service for contacting developers/project leads
 - [OpenAI](https://openai.com/) - Large Language Model (LLM) for natural language processing
 - [Jest](https://jestjs.io/) - Framework for unit testing
 - [Python](https://www.python.org/) - Versatile programming language for backend development
