@@ -255,7 +255,7 @@ function SearchForm({ placeholder = "", onSearch }: SearchFormProps) {
     return (
         <div className={styles['search-container'] }>
             <h1 className={styles['logo-text']}>GeoAI</h1>
-            <form className={styles.searchform} onSubmit={handleSubmit}>
+            <form className={styles.searchform} aria-label="Search form" onSubmit={handleSubmit}>
                 <input
                     ref={searchInputRef}
                     name="searchInput"

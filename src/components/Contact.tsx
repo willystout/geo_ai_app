@@ -143,7 +143,8 @@ function ContactPage() {
                 </p>
 
                 {user ? (
-                    <form 
+                    <form
+                        data-testid="contact-form"
                         className={styles['contact-form']} 
                         onSubmit={handleSubmit}
                     >
