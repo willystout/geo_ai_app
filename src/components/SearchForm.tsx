@@ -5,6 +5,8 @@ import styles from '../styles/SearchForm.module.css';
 import { redirect } from 'next/navigation'
 import { createClient } from '@supabase/supabase-js'
 import { User } from '@supabase/supabase-js';
+import Link from 'next/link';
+
 
 import authStyles from '../styles/AuthButton.module.css';
 
@@ -273,6 +275,20 @@ function SearchForm({ placeholder = "", onSearch }: SearchFormProps) {
                     />
                 )}
 
+                <Link
+                    href="https://14bf-138-202-169-253.ngrok-free.app/upload/"
+                    passHref
+                >
+                    <button
+                        type="button"
+                        className={`${styles['mode-button']} ${activeMode === 'insert' ? styles['active-mode'] : ''}`}
+                     //   onClick={() => window.open("https://14bf-138-202-169-253.ngrok-free.app/upload/", "noopener,noreferrer")}
+                    >
+                        Insert Image
+                    </button>
+                </Link>
+
+
                 <button
                     type="submit"
                     className={styles['search-button']}
@@ -292,22 +308,23 @@ function SearchForm({ placeholder = "", onSearch }: SearchFormProps) {
                 </button>
             </form>
 
-            <div className={styles['mode-selectors']}>
-                <button
-                    type="button"
-                    className={`${styles['mode-button']} ${activeMode === 'insert' ? styles['active-mode'] : ''}`}
-                    onClick={() => toggleMode('insert')}
-                >
-                    Insert Image
-                </button>
-                <button
-                    type="button"
-                    className={`${styles['mode-button']} ${activeMode === 'query' ? styles['active-mode'] : ''}`}
-                    onClick={() => toggleMode('query')}
-                >
-                    Query LLM
-                </button>
-            </div>
+            {/*<removed toggle */}
+            {/*<div className={styles['mode-selectors']}>*/}
+            {/*    <button*/}
+            {/*        type="button"*/}
+            {/*        className={`${styles['mode-button']} ${activeMode === 'insert' ? styles['active-mode'] : ''}`}*/}
+            {/*        onClick={() => toggleMode('insert')}*/}
+            {/*    >*/}
+            {/*        Insert Image*/}
+            {/*    </button>*/}
+            {/*    <button*/}
+            {/*        type="button"*/}
+            {/*        className={`${styles['mode-button']} ${activeMode === 'query' ? styles['active-mode'] : ''}`}*/}
+            {/*        onClick={() => toggleMode('query')}*/}
+            {/*    >*/}
+            {/*        Query LLM*/}
+            {/*    </button>*/}
+            {/*</div>*/}
 
             {/* Query History Section */}
             {user && (
